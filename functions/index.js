@@ -10,41 +10,6 @@
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 
-const mediaResponseTemplate = `
-  {
-    "conversationToken": "{}",
-    "expectUserResponse": ${continueConversation},
-    "expectedInputs": [{
-      "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
-      "inputPrompt": {
-        "richInitialPrompt": {
-          "items": [{
-            "simpleResponse": {
-              "textToSpeech": "${songName} from ${author}"
-            }
-          }, {
-            "mediaResponse": {
-              "mediaType": "AUDIO",
-              "mediaObjects": [{
-                "name": "${songName}",
-                "description": "${description}",
-                "large_image": {
-                  "url": "${imageUrl}"
-                },
-                "contentUrl": "${songUrl}"
-              }]
-            }
-          }],
-          "suggestions": [
-            {"title": "Play another"},
-            {"title": "Share this song"}
-          ]
-        }
-      }
-    }]
-  }
-  `;
-
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
@@ -74,7 +39,74 @@ function playMedia(app, song, continueConversation, comments = "") {
     let description = comments;
   }
   
-  app.doResponse_(JSON.parse(mediaResponseTemplate));
+  let mediaResponseTemplate = `
+    {
+      "conversationToken": "{}",
+      "expectUserResponse": true,
+      "expectedInputs": [{
+        "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
+        "inputPrompt": {
+          "richInitialPrompt": {
+            "items": [{
+              "simpleResponse": {
+                "textToSpeech": "${songName} from ${author}"
+              }
+            }, {
+              "mediaResponse": {
+                "mediaType": "AUDIO",
+                "mediaObjects": [{
+                  "name": "${songName}",
+                  "description": "${description}",
+                  "large_image": {
+                    "url": "${imageUrl}"
+                  },
+                  "contentUrl": "${songUrl}"
+                }]
+              }
+            }],
+            "suggestions": [
+              {"title": "Play another"},
+              {"title": "Share this song"}
+            ]
+          }
+        }
+      }]
+    }
+    `;
+
+  let finalMediaResponseTemplate = `
+    {
+      "conversationToken": "{}",
+      "expectUserResponse": false,
+        "finalResponse": {
+          "richResponse": {
+            "items": [{
+              "simpleResponse": {
+                "textToSpeech": "${songName} from ${author}"
+              }
+            }, {
+              "mediaResponse": {
+                "mediaType": "AUDIO",
+                "mediaObjects": [{
+                  "name": "${songName}",
+                  "description": "${description}",
+                  "large_image": {
+                    "url": "${imageUrl}"
+                  },
+                  "contentUrl": "${songUrl}"
+                }]
+              }
+            }]
+          }
+        }
+    }
+    `;
+  
+  if (continueConversation) {
+    app.doResponse_(JSON.parse(mediaResponseTemplate));
+  } else {
+    app.doResponse_(JSON.parse(finalMediaResponseTemplate));
+  }
 }
 
 /*
