@@ -167,7 +167,7 @@ function processV1Request (request, response) {
       console.log(song_name);
       app.tell('send song called');
       
-      const key = require('song-broadcaster-4cea4ed1bc09.json');
+      const key = require('./song-broadcaster-4cea4ed1bc09.json');
       let jwtClient = new google.auth.JWT(
         key.client_email, null, key.private_key,
         ['https://www.googleapis.com/auth/actions.fulfillment.conversation'],
@@ -182,7 +182,7 @@ function processV1Request (request, response) {
             title: 'Placeholder for song title',
           },
           target: {
-            userId: '<USER_ID>',
+            userId: 'ABwppHEa774ELS-y4Rd5085F-kwGE20xVvhhXWSzK8UUHYt_C18IKtN7GqE0u_VFe4lRH1gtY4lNNJgA2W8s_g',
             intent: 'play_song'
           }
         }
