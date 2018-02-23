@@ -10,10 +10,9 @@
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 
-const google = require('googleapis');
-
 // This is the intent that is triggered for a notification.
 const PLAY_SONG_INTENT = 'play_song';
+const MEDIA_STATUS_INTENT = "actions.intent.MEDIA_STATUS";
 
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
@@ -148,45 +147,16 @@ function processV1Request (request, response) {
     },
     'input.send_song': () => {
       console.log('input.send_song is called');
+<<<<<<< HEAD
       let givn_name = 'roger'; //app.getArgument('given-name');
       let song_name = 'shape of you'; //app.getArgument('song-name');
+=======
+      let givn_name = app.getArgument('given-name');
+      let song = app.getArgument('song');
+>>>>>>> 99064661ea9e237c7c68ad531b5b564dacf86308
       console.log(given_name);
-      console.log(song_name);
+      console.log(song);
       app.tell('send song called');
-
-      const key = require('song-broadcaster-4cea4ed1bc09.json');
-      let jwtClient = new google.auth.JWT(
-        key.client_email, null, key.private_key,
-        ['https://www.googleapis.com/auth/actions.fulfillment.conversation'],
-        null
-      );
-
-      jwtClient.authorize(function (err, tokens) {
-       // placeholder for notification send
-
-        let notif = {
-          userNotification: {
-            title: 'Placeholder for song title',
-          },
-          target: {
-            userId: '<USER_ID>',
-            intent: 'play_song'
-          }
-        }
-
-        console.log(JSON.stringify(tokens) + "\n" + JSON.stringify(notif));
-
-        request.post('https://actions.googleapis.com/v2/conversations:send', {
-          'auth': {
-            'bearer': tokens.access_token
-          },
-          'json': true,
-          'body': { 'customPushMessage': notif, 'isInSandbox': true }
-        }, function(err,httpResponse,body) {
-          console.log(httpResponse.statusCode + ': ' + httpResponse.statusMessage)
-        });
-      });
-
     },
     // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
     'input.unknown': () => {
@@ -214,7 +184,7 @@ function processV1Request (request, response) {
             };        
         } else {
             console.log('Roger: AskToRegisterUpdate()');
-            app.AskToRegisterUpdate(PLAY_SONG_INTENT);
+            app.askToRegisterDailyUpdate(PLAY_SONG_INTENT);
         }
       // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
     //   let responseToUser = {
@@ -236,7 +206,7 @@ function processV1Request (request, response) {
         }
     },
     // Play the song.
-    'play_song': () => {
+    PLAY_SONG_INTENT: () => {
       console.log('Roger: Play song');
       let song = {
         'title': 'song 1',
@@ -246,6 +216,11 @@ function processV1Request (request, response) {
         'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
       };
       playMedia(app, song, true);
+    },
+    // Handle media.STATUS.
+    MEDIA_STATUS_INTENT: () => {
+      console.log('Charlie: Media status');
+      handleMediaEnd(app);
     },
     // Handle AskToRegisterUpdate().
     'finish_register_update': () => {
