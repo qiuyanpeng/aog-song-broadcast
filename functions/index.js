@@ -147,15 +147,10 @@ function processV1Request (request, response) {
     },
     'input.send_song': () => {
       console.log('input.send_song is called');
-<<<<<<< HEAD
-      let givn_name = 'roger'; //app.getArgument('given-name');
-      let song_name = 'shape of you'; //app.getArgument('song-name');
-=======
       let givn_name = app.getArgument('given-name');
-      let song = app.getArgument('song');
->>>>>>> 99064661ea9e237c7c68ad531b5b564dacf86308
+      let song_name = app.getArgument('song-name');
       console.log(given_name);
-      console.log(song);
+      console.log(song_name);
       app.tell('send song called');
     },
     // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
