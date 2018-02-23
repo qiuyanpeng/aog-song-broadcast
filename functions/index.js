@@ -11,6 +11,7 @@ const functions = require('firebase-functions'); // Cloud Functions for Firebase
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 
 // This is the intent that is triggered for a notification.
+const PLAY_SONG_INTENT = 'play_song';
 
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
