@@ -120,15 +120,39 @@ function playMedia(app, song, continueConversation, comments = "") {
 * Temp function to hard code finding a song.
 */
 function findSong(songName = "", genre = "") {
-  let song = {
-    'title': 'song 1',
+  let song1 = {
+    'title': 'one song',
     'author': 'Aog',
     'imageUrl': 'https://images-na.ssl-images-amazon.com/images/M/MV5BMjM4NDM5NDI1OV5BMl5BanBnXkFtZTgwMDQ4NjE0MzE@._V1_UX182_CR0,0,182,268_AL_.jpg',
     'description': 'the first song',
     'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
   };
   
-  return song;
+  let shapeOfView = {
+    'title': 'Shape of View',
+    'author': 'Ed Sheeran',
+    'imageUrl': 'https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg',
+    'description': 'Ed Sheeran - Shape of View',
+    'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
+  };
+  
+  let gangnamStyle = {
+    'title': 'Gangnam Style',
+    'author': 'Psy',
+    'imageUrl': 'https://i.ytimg.com/vi/9bZkp7q19f0/maxresdefault.jpg',
+    'description': 'Psy - Gangnam Style',
+    'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
+  };
+  
+  if (songName.toLowerCase() === "ong song") {
+    return song1;
+  } else if (songName.toLowerCase() === "shape of view") {
+    return shapeOfView;
+  } else if (songName.toLowerCase() === "gangnam style") {
+    return gangnamStyle;
+  }
+  
+  return song1;
 }
 
 /*
