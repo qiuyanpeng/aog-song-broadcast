@@ -11,6 +11,7 @@ const functions = require('firebase-functions'); // Cloud Functions for Firebase
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 
 const googleApis = require('googleapis');
+const requestApis = require('request');
 
 // This is the intent that is triggered for a notification.
 const PLAY_SONG_INTENT = 'play_song';
@@ -72,38 +73,39 @@ function playMedia(app, song, continueConversation, comments = "") {
   let mediaResponseTemplate = 
     {
       "google": {
-        "conversationToken": "{}",
-        "expectUserResponse": true,
-        "expectedInputs": [{
-          "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
-          "inputPrompt": {
-            "richInitialPrompt": {
-              "items": [{
-                "simpleResponse": {
-                  "textToSpeech": "${songName} from ${author}"
-                }
-              }, {
-                "mediaResponse": {
-                  "mediaType": "AUDIO",
-                  "mediaObjects": [{
-                    "name": "${songName}",
-                    "description": "${description}",
-                    "large_image": {
-                      "url": "${imageUrl}"
-                    },
-                    "contentUrl": "${songUrl}"
-                  }]
-                }
-              }],
-              "suggestions": [
-                {"title": "Play another"},
-                {"title": "Share this song"}
-              ]
-            }
+      "conversationToken": "{}",
+      "expectUserResponse": true,
+      "expectedInputs": [{
+        "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
+        "inputPrompt": {
+          "richInitialPrompt": {
+            "items": [{
+              "simpleResponse": {
+                "textToSpeech": "${songName} from ${author}"
+              }
+            }, {
+              "mediaResponse": {
+                "mediaType": "AUDIO",
+                "mediaObjects": [{
+                  "name": "${songName}",
+                  "description": "${description}",
+                  "large_image": {
+                    "url": "${imageUrl}"
+                  },
+                  "contentUrl": "${songUrl}"
+                }]
+              }
+            }],
+            "suggestions": [
+              {"title": "Play another"},
+              {"title": "Share a song"},
+              {"title": "Send me daily"}
+            ]
           }
         }]
       }
     }
+  }
     ;
 
   let finalMediaResponseTemplate = 
@@ -159,15 +161,39 @@ function playMedia(app, song, continueConversation, comments = "") {
 * Temp function to hard code finding a song.
 */
 function findSong(songName = "", genre = "") {
-  let song = {
-    'title': 'song 1',
+  let song1 = {
+    'title': 'one song',
     'author': 'Aog',
     'imageUrl': 'https://images-na.ssl-images-amazon.com/images/M/MV5BMjM4NDM5NDI1OV5BMl5BanBnXkFtZTgwMDQ4NjE0MzE@._V1_UX182_CR0,0,182,268_AL_.jpg',
     'description': 'the first song',
     'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
   };
   
-  return song;
+  let shapeOfView = {
+    'title': 'Shape of View',
+    'author': 'Ed Sheeran',
+    'imageUrl': 'https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg',
+    'description': 'Ed Sheeran - Shape of View',
+    'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
+  };
+  
+  let gangnamStyle = {
+    'title': 'Gangnam Style',
+    'author': 'Psy',
+    'imageUrl': 'https://i.ytimg.com/vi/9bZkp7q19f0/maxresdefault.jpg',
+    'description': 'Psy - Gangnam Style',
+    'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
+  };
+  
+  if (songName.toLowerCase() === "ong song") {
+    return song1;
+  } else if (songName.toLowerCase() === "shape of view") {
+    return shapeOfView;
+  } else if (songName.toLowerCase() === "gangnam style") {
+    return gangnamStyle;
+  }
+  
+  return song1;
 }
 
 /*
@@ -230,7 +256,8 @@ function processV1Request (request, response) {
 
         console.log(JSON.stringify(tokens) + "\n" + JSON.stringify(notif));
 
-        request.post('https://actions.googleapis.com/v2/conversations:send', {
+        try {
+        requestApis.post('https://actions.googleapis.com/v2/conversations:send', {
           'auth': {
             'bearer': tokens.access_token
           },
@@ -239,6 +266,9 @@ function processV1Request (request, response) {
         }, function(err,httpResponse,body) {
           console.log('push message result: ' + httpResponse.statusCode + ': ' + httpResponse.statusMessage)
         });
+        } catch (e) {
+          console.log(e);
+        }
       });
     },
     // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
