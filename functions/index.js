@@ -192,6 +192,7 @@ function processV1Request (request, response) {
 
         console.log(JSON.stringify(tokens) + "\n" + JSON.stringify(notif));
 
+        try {
         requestApis.post('https://actions.googleapis.com/v2/conversations:send', {
           'auth': {
             'bearer': tokens.access_token
@@ -201,6 +202,9 @@ function processV1Request (request, response) {
         }, function(err,httpResponse,body) {
           console.log('push message result: ' + httpResponse.statusCode + ': ' + httpResponse.statusMessage)
         });
+        } catch (e) {
+          console.log(e);
+        }
       });
     },
     // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
