@@ -10,10 +10,31 @@
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 
-const mediaResponseTemplate = `
+// This is the intent that is triggered for a notification.
+
+exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
+  console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
+  console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
+  if (request.body.result) {
+    processV1Request(request, response);
+  } else if (request.body.queryResult) {
+    processV2Request(request, response);
+  } else {
+    console.log('Invalid Request');
+    return response.status(400).end('Invalid Webhook Request (expecting v1 or v2 webhook request)');
+  }
+});
+
+/*
+* Function to play a song with mediaResponseTemplate.
+* Needs to specify a song object fetched from database,
+* and also whether conversation should continue after the song.
+*/
+function playMedia(app, song, continueConversation, comments = "") {
+  const mediaResponseTemplate = `
   {
     "conversationToken": "{}",
-    "expectUserResponse": ${continueConversation},
+    "expectUserResponse": true,
     "expectedInputs": [{
       "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
       "inputPrompt": {
@@ -44,26 +65,6 @@ const mediaResponseTemplate = `
     }]
   }
   `;
-
-exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
-  console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
-  console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
-  if (request.body.result) {
-    processV1Request(request, response);
-  } else if (request.body.queryResult) {
-    processV2Request(request, response);
-  } else {
-    console.log('Invalid Request');
-    return response.status(400).end('Invalid Webhook Request (expecting v1 or v2 webhook request)');
-  }
-});
-
-/*
-* Function to play a song with mediaResponseTemplate.
-* Needs to specify a song object fetched from database,
-* and also whether conversation should continue after the song.
-*/
-function playMedia(app, song, continueConversation, comments = "") {
   let songName = song.title;
   let author = song.author;
   let imageUrl = song.image;
@@ -147,7 +148,8 @@ function processV1Request (request, response) {
                 app.tell("Sorry, you need a screen to see pictures");
             };        
         } else {
-            // Call Register Updates.
+            console.log('Roger: AskToRegisterUpdate()');
+            app.AskToRegisterUpdate(PLAY_SONG_INTENT);
         }
       // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
     //   let responseToUser = {
@@ -166,6 +168,26 @@ function processV1Request (request, response) {
             app.tell('Thanks for accepting');
         } else {
             app.tell('Ok, I understand. You don\'t want to switch devices. Bye');
+        }
+    },
+    // Play the song.
+    'play_song': () => {
+      console.log('Roger: Play song');
+      let song = {
+        'title': 'song 1',
+        'author': 'Aog',
+        'imageUrl': 'https://image.jpg',
+        'description': 'the first song',
+      };
+      playMedia(app, song, true);
+    },
+    // Handle AskToRegisterUpdate().
+    'finish_register_update': () => {
+        console.log('Roger: In input.finish_register_update.');
+        if (app.isUpdateRegistered()) {
+          app.tell('Ok I\'ll start sending you song updates.');
+        } else {
+          app.tell('Ok I won\'t give you song updates.');
         }
     },
     // Default handler for unknown or undefined actions
