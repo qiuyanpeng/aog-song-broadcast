@@ -149,7 +149,7 @@ function processV1Request (request, response) {
     },
     'input.send_song': () => {
       console.log('input.send_song is called');
-      let givn_name = app.getArgument('given-name');
+      let given_name = app.getArgument('given-name');
       let song_name = app.getArgument('song-name');
       console.log(given_name);
       console.log(song_name);
