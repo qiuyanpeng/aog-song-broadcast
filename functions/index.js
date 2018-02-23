@@ -9,6 +9,7 @@
 
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
+const admin = require("firebase-admin");
 
 const google = require('googleapis');
 
@@ -116,14 +117,26 @@ function playMedia(app, song, continueConversation, comments = "") {
 }
 
 /*
+* Temp function to hard code finding a song.
+*/
+function findSong(songName = "", genre = "") {
+  let song = {
+    'title': 'song 1',
+    'author': 'Aog',
+    'imageUrl': 'https://images-na.ssl-images-amazon.com/images/M/MV5BMjM4NDM5NDI1OV5BMl5BanBnXkFtZTgwMDQ4NjE0MzE@._V1_UX182_CR0,0,182,268_AL_.jpg',
+    'description': 'the first song',
+    'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
+  };
+  
+  return song;
+}
+
+/*
 * Function to handle the event when one media play finishes.
+* Will just find another random song and play.
 */
 function handleMediaEnd(app) {
-  if (app.getMediaStatus() == app.Media.Status.FINISHED) {
-    //response if audio finished playing
-  } else { //"STATUS_UNSPECIFIED"
-    //response if audio did not finish playing
-  }
+  playMedia(app, findSong(), true);
 }
 
 /*
