@@ -148,7 +148,7 @@ function findSong(songName = "", genre = "") {
   
   if (songName.toLowerCase() === "ong song") {
     return song1;
-  } else if (songName.toLowerCase() === "shape of view") {
+  } else if (songName.toLowerCase() === "shape of you") {
     return shapeOfView;
   } else if (songName.toLowerCase() === "gangnam style") {
     return gangnamStyle;
@@ -193,7 +193,10 @@ function processV1Request (request, response) {
       let song_name = app.getArgument('song-name');
       console.log(given_name);
       console.log(song_name);
-      app.tell('send song called');
+
+      let song = findSong(song_name);
+      console.log(song);
+      app.tell('Sure, we are sharing ' + song.name + ' to ' + given_name);
       
       const key = require('./song-broadcaster-4cea4ed1bc09.json');
       let jwtClient = new googleApis.auth.JWT(
@@ -203,11 +206,14 @@ function processV1Request (request, response) {
       );
 
       jwtClient.authorize(function (err, tokens) {
-       // placeholder for notification send
-
         let notif = {
           userNotification: {
-            title: 'Placeholder for song title',
+            title: song.name,
+            argument: {
+              name: 'song-name',
+              textValue: song.name,
+              rawValue: song.name
+            }
           },
           target: {
             userId: 'ABwppHEa774ELS-y4Rd5085F-kwGE20xVvhhXWSzK8UUHYt_C18IKtN7GqE0u_VFe4lRH1gtY4lNNJgA2W8s_g',
