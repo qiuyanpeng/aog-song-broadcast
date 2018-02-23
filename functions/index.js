@@ -215,12 +215,7 @@ function processV1Request (request, response) {
   const actionHandlers = {
     // The default welcome intent has been matched, welcome the user (https://dialogflow.com/docs/events#default_welcome_intent)
     'input.welcome': () => {
-      // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
-      if (requestSource === googleAssistantRequest) {
-        sendGoogleResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
-      } else {
-        sendResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
-      }
+      playMedia(app, findSong(), true);
     },
     'input.send_song': () => {
       console.log('input.send_song is called');
@@ -330,7 +325,7 @@ function processV1Request (request, response) {
         'description': 'the first song',
         'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
       };
-      playMedia(app, song, true);
+      playMedia(app, song, false);
     },
     // Handle media.STATUS.
     'input.media_status_response': () => {
