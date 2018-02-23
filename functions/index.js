@@ -42,6 +42,19 @@ function processV1Request (request, response) {
         sendResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
       }
     },
+    'input.send_song': () => {
+      console.log('input.send_song is called');
+      let name = app.getArgument('given-name');
+      let song = app.getArgument('song');
+      if (song) {
+        app.tell(`name is ${given-name} and song is ${song}`);
+        // TODO(qyp): find the song
+      } else {
+        app.tell(`name is ${given-name} and song is random`);
+        // TODO(qyp): get a song
+      }
+      // TODO(qyp): Send a push
+    },
     // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
     'input.unknown': () => {
       // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
@@ -51,19 +64,6 @@ function processV1Request (request, response) {
         sendResponse('I\'m having trouble, can you try that again?'); // Send simple response to user
       }
     },
-     // When the BUY_MOVIE_TICKET intent gets matched, handoff the user to AMP page (https://dialogflow.com/docs/events#default_welcome_intent)
-    'input.buy_movie_ticket': () => {
-      // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
-      let responseToUser = {
-        //data: richResponsesV1, // Optional, uncomment to enable
-        //outputContexts: [{'name': 'weather', 'lifespan': 2, 'parameters': {'city': 'Rome'}}], // Optional, uncomment to enable
-        speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
-        text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
-        data: richResponsesV1
-      };
-      sendResponse(responseToUser);
-    },
-
     // Default handler for unknown or undefined actions
     'default': () => {
       // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
