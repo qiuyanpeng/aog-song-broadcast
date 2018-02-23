@@ -10,7 +10,8 @@
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 
-const google = require('googleapis');
+const googleApis = require('googleapis');
+const requestApis = require('request');
 
 // This is the intent that is triggered for a notification.
 const PLAY_SONG_INTENT = 'play_song';
@@ -39,10 +40,11 @@ function playMedia(app, song, continueConversation, comments = "") {
   let author = song.author;
   let imageUrl = song.image;
   let songUrl = song.url;
+  let description;
   if (comments == "") {
-    let description = song.description;
+    description = song.description;
   } else {
-    let description = comments;
+    description = comments;
   }
   
   let mediaResponseTemplate = `
@@ -168,6 +170,7 @@ function handleMediaEnd(app) {
 */
 function processV1Request (request, response) {
   let action = request.body.result.action; // https://dialogflow.com/docs/actions-and-parameters
+  console.log('Action is: ' + action);
   let parameters = request.body.result.parameters; // https://dialogflow.com/docs/actions-and-parameters
   let inputContexts = request.body.result.contexts; // https://dialogflow.com/docs/contexts
   let requestSource = (request.body.originalRequest) ? request.body.originalRequest.source : undefined;
@@ -193,7 +196,7 @@ function processV1Request (request, response) {
       app.tell('send song called');
       
       const key = require('./song-broadcaster-4cea4ed1bc09.json');
-      let jwtClient = new google.auth.JWT(
+      let jwtClient = new googleApis.auth.JWT(
         key.client_email, null, key.private_key,
         ['https://www.googleapis.com/auth/actions.fulfillment.conversation'],
         null
@@ -214,14 +217,14 @@ function processV1Request (request, response) {
 
         console.log(JSON.stringify(tokens) + "\n" + JSON.stringify(notif));
 
-        request.post('https://actions.googleapis.com/v2/conversations:send', {
+        requestApis.post('https://actions.googleapis.com/v2/conversations:send', {
           'auth': {
             'bearer': tokens.access_token
           },
           'json': true,
           'body': { 'customPushMessage': notif, 'isInSandbox': true }
         }, function(err,httpResponse,body) {
-          console.log(httpResponse.statusCode + ': ' + httpResponse.statusMessage)
+          console.log('push message result: ' + httpResponse.statusCode + ': ' + httpResponse.statusMessage)
         });
       });
     },
@@ -273,7 +276,7 @@ function processV1Request (request, response) {
         }
     },
     // Play the song.
-    PLAY_SONG_INTENT: () => {
+    'input.play_song': () => {
       console.log('Roger: Play song');
       let song = {
         'title': 'song 1',
