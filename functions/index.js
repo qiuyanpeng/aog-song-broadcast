@@ -39,10 +39,11 @@ function playMedia(app, song, continueConversation, comments = "") {
   let author = song.author;
   let imageUrl = song.image;
   let songUrl = song.url;
+  let description;
   if (comments == "") {
-    let description = song.description;
+    description = song.description;
   } else {
-    let description = comments;
+    description = comments;
   }
   
   let mediaResponseTemplate = `
@@ -143,6 +144,7 @@ function handleMediaEnd(app) {
 */
 function processV1Request (request, response) {
   let action = request.body.result.action; // https://dialogflow.com/docs/actions-and-parameters
+  console.log('Action is: ' + action);
   let parameters = request.body.result.parameters; // https://dialogflow.com/docs/actions-and-parameters
   let inputContexts = request.body.result.contexts; // https://dialogflow.com/docs/contexts
   let requestSource = (request.body.originalRequest) ? request.body.originalRequest.source : undefined;
@@ -248,7 +250,7 @@ function processV1Request (request, response) {
         }
     },
     // Play the song.
-    PLAY_SONG_INTENT: () => {
+    'input.play_song': () => {
       console.log('Roger: Play song');
       let song = {
         'title': 'song 1',
