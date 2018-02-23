@@ -102,8 +102,8 @@ function playMedia(app, song, continueConversation, comments = "") {
               {"title": "Send me daily"}
             ]
           }
-        }]
-      }
+        }
+      }]
     }
   }
     ;
