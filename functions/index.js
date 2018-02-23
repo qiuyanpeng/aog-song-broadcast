@@ -51,17 +51,42 @@ function processV1Request (request, response) {
         sendResponse('I\'m having trouble, can you try that again?'); // Send simple response to user
       }
     },
-     // When the BUY_MOVIE_TICKET intent gets matched, handoff the user to AMP page (https://dialogflow.com/docs/events#default_welcome_intent)
-    'input.buy_movie_ticket': () => {
+     // When the user wants to get subsribed to daily updates. If the user is on a device with screen,
+     // then directly register for updates, else handoff to a device with screen.
+    'input.check_surface': () => {
+        console.log('Nancy: in input.check_surface');
+        let currentDeviceHasScreen = app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT)
+        let hasScreen = app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT);
+        if (!currentDeviceHasScreen) {
+            let context = 'Sure, I can send you updates.';
+            let notif = 'Sample Update';
+            let screenAvailable = app.hasAvailableSurfaceCapabilities(app.SurfaceCapabilities.SCREEN_OUTPUT);
+            if (screenAvailable) {
+                app.askForNewSurface(context, notif, [app.SurfaceCapabilities.SCREEN_OUTPUT]);
+            } else {
+                app.tell("Sorry, you need a screen to see pictures");
+            };        
+        } else {
+            // Call Register Updates.
+        }
       // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
-      let responseToUser = {
-        //data: richResponsesV1, // Optional, uncomment to enable
-        //outputContexts: [{'name': 'weather', 'lifespan': 2, 'parameters': {'city': 'Rome'}}], // Optional, uncomment to enable
-        speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
-        text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
-        data: richResponsesV1
-      };
-      sendResponse(responseToUser);
+    //   let responseToUser = {
+    //     //data: richResponsesV1, // Optional, uncomment to enable
+    //     //outputContexts: [{'name': 'weather', 'lifespan': 2, 'parameters': {'city': 'Rome'}}], // Optional, uncomment to enable
+    //     speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
+    //     text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
+    //     data: richResponsesV1
+    //   };
+    //   sendResponse(responseToUser);
+    },
+    // Handle the new surface response.
+    'input.new_surface_response': () => {
+        console.log('Nancy: in input.new_surface_response. Bye');
+        if (app.isNewSurface()) {
+            app.tell('Thanks for accepting');
+        } else {
+            app.tell('Ok, I understand. You don\'t want to switch devices. Bye');
+        }
     },
 
     // Default handler for unknown or undefined actions
