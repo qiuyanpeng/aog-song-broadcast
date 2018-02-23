@@ -13,10 +13,6 @@ const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assi
 const googleApis = require('googleapis');
 const requestApis = require('request');
 
-// This is the intent that is triggered for a notification.
-const PLAY_SONG_INTENT = 'play_song';
-const MEDIA_STATUS_INTENT = "actions.intent.MEDIA_STATUS";
-
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
@@ -60,7 +56,7 @@ function findSong(songName = "", genre = "") {
   
   if (songName.toLowerCase() === "ong song") {
     return song1;
-  } else if (songName.toLowerCase() === "shape of view") {
+  } else if (songName.toLowerCase() === "shape of you") {
     return shapeOfView;
   } else if (songName.toLowerCase() === "gangnam style") {
     return gangnamStyle;
@@ -92,12 +88,7 @@ function processV1Request (request, response) {
   const actionHandlers = {
     // The default welcome intent has been matched, welcome the user (https://dialogflow.com/docs/events#default_welcome_intent)
     'input.welcome': () => {
-      // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
-      if (requestSource === googleAssistantRequest) {
-        sendGoogleResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
-      } else {
-        sendResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
-      }
+      playMedia(app, findSong(), true);
     },
     'input.send_song': () => {
       console.log('input.send_song is called');
@@ -105,7 +96,10 @@ function processV1Request (request, response) {
       let song_name = app.getArgument('song-name');
       console.log(given_name);
       console.log(song_name);
-      app.tell('send song called');
+
+      let song = findSong(song_name);
+      console.log(song);
+      app.tell('Sure, we are sharing ' + song.name + ' to ' + given_name);
       
       const key = require('./song-broadcaster-4cea4ed1bc09.json');
       let jwtClient = new googleApis.auth.JWT(
@@ -115,11 +109,14 @@ function processV1Request (request, response) {
       );
 
       jwtClient.authorize(function (err, tokens) {
-       // placeholder for notification send
-
         let notif = {
           userNotification: {
-            title: 'Placeholder for song title',
+            title: song.name,
+            argument: {
+              name: 'song-name',
+              textValue: song.name,
+              rawValue: song.name
+            }
           },
           target: {
             userId: 'ABwppHEa774ELS-y4Rd5085F-kwGE20xVvhhXWSzK8UUHYt_C18IKtN7GqE0u_VFe4lRH1gtY4lNNJgA2W8s_g',
@@ -201,10 +198,10 @@ function processV1Request (request, response) {
         'description': 'the first song',
         'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
       };
-      playMedia(app, song, true);
+      playMedia(app, song, false);
     },
     // Handle media.STATUS.
-    MEDIA_STATUS_INTENT: () => {
+    'input.media_status_response': () => {
       console.log('Charlie: Media status');
       handleMediaEnd(app);
     },
