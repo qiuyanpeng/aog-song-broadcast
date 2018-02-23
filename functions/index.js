@@ -72,7 +72,7 @@ function playMedia(app, song, continueConversation, comments = "") {
             }],
             "suggestions": [
               {"title": "Play another"},
-              {"title": "Share this song"}
+              {"title": "Share a song"}
             ]
           }
         }
