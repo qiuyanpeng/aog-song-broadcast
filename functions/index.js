@@ -13,10 +13,6 @@ const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assi
 const googleApis = require('googleapis');
 const requestApis = require('request');
 
-// This is the intent that is triggered for a notification.
-const PLAY_SONG_INTENT = 'play_song';
-const MEDIA_STATUS_INTENT = "actions.intent.MEDIA_STATUS";
-
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
@@ -288,7 +284,7 @@ function processV1Request (request, response) {
       playMedia(app, song, true);
     },
     // Handle media.STATUS.
-    MEDIA_STATUS_INTENT: () => {
+    'input.media_status_response': () => {
       console.log('Charlie: Media status');
       handleMediaEnd(app);
     },
