@@ -9,6 +9,42 @@
 
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
+
+const mediaResponseTemplate = `
+  {
+    "conversationToken": "{}",
+    "expectUserResponse": $continueConversation,
+    "expectedInputs": [{
+      "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
+      "inputPrompt": {
+        "richInitialPrompt": {
+          "items": [{
+            "simpleResponse": {
+              "textToSpeech": "$songName from $author"
+            }
+          }, {
+            "mediaResponse": {
+              "mediaType": "AUDIO",
+              "mediaObjects": [{
+                "name": "$songName",
+                "description": "$comments",
+                "large_image": {
+                  "url": "$imageUrl"
+                },
+                "contentUrl": "$songUrl"
+              }]
+            }
+          }],
+          "suggestions": [
+            {"title": "Play another"},
+            {"title": "Share this song"}
+          ]
+        }
+      }
+    }]
+  }
+  `;
+
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
@@ -21,6 +57,18 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     return response.status(400).end('Invalid Webhook Request (expecting v1 or v2 webhook request)');
   }
 });
+
+/*
+* Function to handle the event when one media play finishes.
+*/
+function handleMediaEnd(app) {
+  if (app.getMediaStatus() == app.Media.Status.FINISHED) {
+    //response if audio finished playing
+  } else { //"STATUS_UNSPECIFIED"
+    //response if audio did not finish playing
+  }
+}
+
 /*
 * Function to handle v1 webhook requests from Dialogflow
 */
@@ -41,6 +89,19 @@ function processV1Request (request, response) {
       } else {
         sendResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
       }
+    },
+    'input.send_song': () => {
+      console.log('input.send_song is called');
+      let name = app.getArgument('given-name');
+      let song = app.getArgument('song');
+      if (song) {
+        app.tell(`name is ${given-name} and song is ${song}`);
+        // TODO(qyp): find the song
+      } else {
+        app.tell(`name is ${given-name} and song is random`);
+        // TODO(qyp): get a song
+      }
+      // TODO(qyp): Send a push
     },
     // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
     'input.unknown': () => {
@@ -88,7 +149,6 @@ function processV1Request (request, response) {
             app.tell('Ok, I understand. You don\'t want to switch devices. Bye');
         }
     },
-
     // Default handler for unknown or undefined actions
     'default': () => {
       // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
