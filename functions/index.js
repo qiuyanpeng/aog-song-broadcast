@@ -30,133 +30,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   }
 });
 
-// Function to send correctly formatted responses to Dialogflow which are then sent to the user
-function sendResponse (responseToUser) {
-  // if the response is a string send it as a response to the user
-  if (typeof responseToUser === 'string') {
-    let responseJson = {};
-    responseJson.speech = responseToUser; // spoken response
-    responseJson.displayText = responseToUser; // displayed response
-    response.json(responseJson); // Send response to Dialogflow
-  } else {
-    // If the response to the user includes rich responses or contexts send them to Dialogflow
-    let responseJson = {};
-    // If speech or displayText is defined, use it to respond (if one isn't defined use the other's value)
-    responseJson.speech = responseToUser.speech || responseToUser.displayText;
-    responseJson.displayText = responseToUser.displayText || responseToUser.speech;
-    // Optional: add rich messages for integrations (https://dialogflow.com/docs/rich-messages)
-    responseJson.data = responseToUser.data;
-    // Optional: add contexts (https://dialogflow.com/docs/contexts)
-    responseJson.contextOut = responseToUser.outputContexts;
-    console.log('Response to Dialogflow: ' + JSON.stringify(responseJson));
-    response.json(responseJson); // Send response to Dialogflow
-  }
-}
-
-/*
-* Function to play a song with mediaResponseTemplate.
-* Needs to specify a song object fetched from database,
-* and also whether conversation should continue after the song.
-*/
-function playMedia(app, song, continueConversation, comments = "") {
-  let songName = song.title;
-  let author = song.author;
-  let imageUrl = song.image;
-  let songUrl = song.url;
-  let description;
-  if (comments == "") {
-    description = song.description;
-  } else {
-    description = comments;
-  }
-  
-  let mediaResponseTemplate = 
-    {
-      "google": {
-      "conversationToken": "{}",
-      "expectUserResponse": true,
-      "expectedInputs": [{
-        "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
-        "inputPrompt": {
-          "richInitialPrompt": {
-            "items": [{
-              "simpleResponse": {
-                "textToSpeech": "${songName} from ${author}"
-              }
-            }, {
-              "mediaResponse": {
-                "mediaType": "AUDIO",
-                "mediaObjects": [{
-                  "name": "${songName}",
-                  "description": "${description}",
-                  "large_image": {
-                    "url": "${imageUrl}"
-                  },
-                  "contentUrl": "${songUrl}"
-                }]
-              }
-            }],
-            "suggestions": [
-              {"title": "Play another"},
-              {"title": "Share a song"},
-              {"title": "Send me daily"}
-            ]
-          }
-        }
-      }]
-    }
-  }
-    ;
-
-  let finalMediaResponseTemplate = 
-    {
-      "google": {
-        "conversationToken": "{}",
-        "expectUserResponse": false,
-          "finalResponse": {
-            "richResponse": {
-              "items": [{
-                "simpleResponse": {
-                  "textToSpeech": "${songName} from ${author}"
-                }
-              }, {
-                "mediaResponse": {
-                  "mediaType": "AUDIO",
-                  "mediaObjects": [{
-                    "name": "${songName}",
-                    "description": "${description}",
-                    "large_image": {
-                      "url": "${imageUrl}"
-                    },
-                    "contentUrl": "${songUrl}"
-                  }]
-                }
-              }]
-            }
-          }
-      }
-    }
-    ;
-
-    
-  
-  if (continueConversation) {
-     let responseToUser = {
-        speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
-        text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
-        data: mediaResponseTemplate
-      };
-      sendResponse(responseToUser);
-  } else {
-     let responseToUser = {
-        speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
-        text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
-        data: finalMediaResponseTemplate
-      };
-      sendResponse(responseToUser);
-  }
-}
-
 /*
 * Temp function to hard code finding a song.
 */
@@ -394,6 +267,133 @@ function processV1Request (request, response) {
       app.ask(googleResponse); // Send response to Dialogflow and Google Assistant
     }
   }
+
+  // Function to send correctly formatted responses to Dialogflow which are then sent to the user
+function sendResponse (responseToUser) {
+  // if the response is a string send it as a response to the user
+  if (typeof responseToUser === 'string') {
+    let responseJson = {};
+    responseJson.speech = responseToUser; // spoken response
+    responseJson.displayText = responseToUser; // displayed response
+    response.json(responseJson); // Send response to Dialogflow
+  } else {
+    // If the response to the user includes rich responses or contexts send them to Dialogflow
+    let responseJson = {};
+    // If speech or displayText is defined, use it to respond (if one isn't defined use the other's value)
+    responseJson.speech = responseToUser.speech || responseToUser.displayText;
+    responseJson.displayText = responseToUser.displayText || responseToUser.speech;
+    // Optional: add rich messages for integrations (https://dialogflow.com/docs/rich-messages)
+    responseJson.data = responseToUser.data;
+    // Optional: add contexts (https://dialogflow.com/docs/contexts)
+    responseJson.contextOut = responseToUser.outputContexts;
+    console.log('Response to Dialogflow: ' + JSON.stringify(responseJson));
+    response.json(responseJson); // Send response to Dialogflow
+  }
+}
+
+/*
+* Function to play a song with mediaResponseTemplate.
+* Needs to specify a song object fetched from database,
+* and also whether conversation should continue after the song.
+*/
+function playMedia(app, song, continueConversation, comments = "") {
+  let songName = song.title;
+  let author = song.author;
+  let imageUrl = song.image;
+  let songUrl = song.url;
+  let description;
+  if (comments == "") {
+    description = song.description;
+  } else {
+    description = comments;
+  }
+  
+  let mediaResponseTemplate = 
+    {
+      "google": {
+      "conversationToken": "{}",
+      "expectUserResponse": true,
+      "expectedInputs": [{
+        "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
+        "inputPrompt": {
+          "richInitialPrompt": {
+            "items": [{
+              "simpleResponse": {
+                "textToSpeech": "${songName} from ${author}"
+              }
+            }, {
+              "mediaResponse": {
+                "mediaType": "AUDIO",
+                "mediaObjects": [{
+                  "name": "${songName}",
+                  "description": "${description}",
+                  "large_image": {
+                    "url": "${imageUrl}"
+                  },
+                  "contentUrl": "${songUrl}"
+                }]
+              }
+            }],
+            "suggestions": [
+              {"title": "Play another"},
+              {"title": "Share a song"},
+              {"title": "Send me daily"}
+            ]
+          }
+        }
+      }]
+    }
+  }
+    ;
+
+  let finalMediaResponseTemplate = 
+    {
+      "google": {
+        "conversationToken": "{}",
+        "expectUserResponse": false,
+          "finalResponse": {
+            "richResponse": {
+              "items": [{
+                "simpleResponse": {
+                  "textToSpeech": "${songName} from ${author}"
+                }
+              }, {
+                "mediaResponse": {
+                  "mediaType": "AUDIO",
+                  "mediaObjects": [{
+                    "name": "${songName}",
+                    "description": "${description}",
+                    "large_image": {
+                      "url": "${imageUrl}"
+                    },
+                    "contentUrl": "${songUrl}"
+                  }]
+                }
+              }]
+            }
+          }
+      }
+    }
+    ;
+
+    
+  
+  if (continueConversation) {
+     let responseToUser = {
+        speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
+        text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
+        data: mediaResponseTemplate
+      };
+      sendResponse(responseToUser);
+  } else {
+     let responseToUser = {
+        speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
+        text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
+        data: finalMediaResponseTemplate
+      };
+      sendResponse(responseToUser);
+  }
+}
   console.log('Nancy: Dialogflow Response: ' + JSON.stringify(response.body));
 }
 // Construct rich response for Google Assistant (v1 requests only)
