@@ -117,17 +117,20 @@ function processV1Request (request, response) {
     'input.check_surface': () => {
         console.log('Nancy: in input.check_surface');
         let currentDeviceHasScreen = app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT)
-        let hasScreen = app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT);
         if (!currentDeviceHasScreen) {
+            console.log('Nancy: Current Device does not have screen');
             let context = 'Sure, I can send you updates.';
             let notif = 'Sample Update';
             let screenAvailable = app.hasAvailableSurfaceCapabilities(app.SurfaceCapabilities.SCREEN_OUTPUT);
             if (screenAvailable) {
+                console.log('Nancy: User has a screen');
                 app.askForNewSurface(context, notif, [app.SurfaceCapabilities.SCREEN_OUTPUT]);
             } else {
-                app.tell("Sorry, you need a screen to see pictures");
+                console.log('Nancy: User does not have a device with screen');
+                app.tell("Sorry, you need a screen to see updates");
             };        
         } else {
+            console.log('Nancy: Current Device has screen');
             // Call Register Updates.
         }
       // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
