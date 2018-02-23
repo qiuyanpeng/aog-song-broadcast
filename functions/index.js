@@ -13,25 +13,25 @@ const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assi
 const mediaResponseTemplate = `
   {
     "conversationToken": "{}",
-    "expectUserResponse": $continueConversation,
+    "expectUserResponse": ${continueConversation},
     "expectedInputs": [{
       "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
       "inputPrompt": {
         "richInitialPrompt": {
           "items": [{
             "simpleResponse": {
-              "textToSpeech": "$songName from $author"
+              "textToSpeech": "${songName} from ${author}"
             }
           }, {
             "mediaResponse": {
               "mediaType": "AUDIO",
               "mediaObjects": [{
-                "name": "$songName",
-                "description": "$comments",
+                "name": "${songName}",
+                "description": "${description}",
                 "large_image": {
-                  "url": "$imageUrl"
+                  "url": "${imageUrl}"
                 },
-                "contentUrl": "$songUrl"
+                "contentUrl": "${songUrl}"
               }]
             }
           }],
@@ -57,6 +57,25 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     return response.status(400).end('Invalid Webhook Request (expecting v1 or v2 webhook request)');
   }
 });
+
+/*
+* Function to play a song with mediaResponseTemplate.
+* Needs to specify a song object fetched from database,
+* and also whether conversation should continue after the song.
+*/
+function playMedia(app, song, continueConversation, comments = "") {
+  let songName = song.title;
+  let author = song.author;
+  let imageUrl = song.image;
+  let songUrl = song.url;
+  if (comments == "") {
+    let description = song.description;
+  } else {
+    let description = comments;
+  }
+  
+  app.doResponse_(JSON.parse(mediaResponseTemplate));
+}
 
 /*
 * Function to handle the event when one media play finishes.
@@ -96,14 +115,7 @@ function processV1Request (request, response) {
       let song = app.getArgument('song');
       console.log(given_name);
       console.log(song);
-//      if (song) {
-//        app.tell(`name is ${given_name} and song is ${song}`);
-        // TODO(qyp): find the song
-//      } else {
-//        app.tell(`name is ${given_name} and song is random`);
-        // TODO(qyp): get a song
-//      }
-//       TODO(qyp): Send a push
+      app.tell('send song called');
     },
     // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
     'input.unknown': () => {
