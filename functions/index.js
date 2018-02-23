@@ -13,10 +13,6 @@ const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assi
 const googleApis = require('googleapis');
 const requestApis = require('request');
 
-// This is the intent that is triggered for a notification.
-const PLAY_SONG_INTENT = 'play_song';
-const MEDIA_STATUS_INTENT = "actions.intent.MEDIA_STATUS";
-
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
@@ -186,7 +182,7 @@ function findSong(songName = "", genre = "") {
   
   if (songName.toLowerCase() === "ong song") {
     return song1;
-  } else if (songName.toLowerCase() === "shape of view") {
+  } else if (songName.toLowerCase() === "shape of you") {
     return shapeOfView;
   } else if (songName.toLowerCase() === "gangnam style") {
     return gangnamStyle;
@@ -218,12 +214,7 @@ function processV1Request (request, response) {
   const actionHandlers = {
     // The default welcome intent has been matched, welcome the user (https://dialogflow.com/docs/events#default_welcome_intent)
     'input.welcome': () => {
-      // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
-      if (requestSource === googleAssistantRequest) {
-        sendGoogleResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
-      } else {
-        sendResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
-      }
+      playMedia(app, findSong(), true);
     },
     'input.send_song': () => {
       console.log('input.send_song is called');
@@ -231,7 +222,10 @@ function processV1Request (request, response) {
       let song_name = app.getArgument('song-name');
       console.log(given_name);
       console.log(song_name);
-      app.tell('send song called');
+
+      let song = findSong(song_name);
+      console.log(song);
+      app.tell('Sure, we are sharing ' + song.name + ' to ' + given_name);
       
       const key = require('./song-broadcaster-4cea4ed1bc09.json');
       let jwtClient = new googleApis.auth.JWT(
@@ -241,11 +235,14 @@ function processV1Request (request, response) {
       );
 
       jwtClient.authorize(function (err, tokens) {
-       // placeholder for notification send
-
         let notif = {
           userNotification: {
-            title: 'Placeholder for song title',
+            title: song.name,
+            argument: {
+              name: 'song-name',
+              textValue: song.name,
+              rawValue: song.name
+            }
           },
           target: {
             userId: 'ABwppHEa774ELS-y4Rd5085F-kwGE20xVvhhXWSzK8UUHYt_C18IKtN7GqE0u_VFe4lRH1gtY4lNNJgA2W8s_g',
@@ -331,10 +328,10 @@ function processV1Request (request, response) {
         'description': 'the first song',
         'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
       };
-      playMedia(app, song, true);
+      playMedia(app, song, false);
     },
     // Handle media.STATUS.
-    MEDIA_STATUS_INTENT: () => {
+    'input.media_status_response': () => {
       console.log('Charlie: Media status');
       handleMediaEnd(app);
     },
@@ -397,6 +394,131 @@ function processV1Request (request, response) {
       app.ask(googleResponse); // Send response to Dialogflow and Google Assistant
     }
   }
+
+  // Function to send correctly formatted responses to Dialogflow which are then sent to the user
+function sendResponse (responseToUser) {
+  // if the response is a string send it as a response to the user
+  if (typeof responseToUser === 'string') {
+    let responseJson = {};
+    responseJson.speech = responseToUser; // spoken response
+    responseJson.displayText = responseToUser; // displayed response
+    response.json(responseJson); // Send response to Dialogflow
+  } else {
+    // If the response to the user includes rich responses or contexts send them to Dialogflow
+    let responseJson = {};
+    // If speech or displayText is defined, use it to respond (if one isn't defined use the other's value)
+    responseJson.speech = responseToUser.speech || responseToUser.displayText;
+    responseJson.displayText = responseToUser.displayText || responseToUser.speech;
+    // Optional: add rich messages for integrations (https://dialogflow.com/docs/rich-messages)
+    responseJson.data = responseToUser.data;
+    // Optional: add contexts (https://dialogflow.com/docs/contexts)
+    responseJson.contextOut = responseToUser.outputContexts;
+    console.log('Response to Dialogflow: ' + JSON.stringify(responseJson));
+    response.json(responseJson); // Send response to Dialogflow
+  }
+}
+
+/*
+* Function to play a song with mediaResponseTemplate.
+* Needs to specify a song object fetched from database,
+* and also whether conversation should continue after the song.
+*/
+function playMedia(app, song, continueConversation, comments = "") {
+  let songName = song.title;
+  let author = song.author;
+  let imageUrl = song.image;
+  let songUrl = song.url;
+  let description;
+  if (comments == "") {
+    description = song.description;
+  } else {
+    description = comments;
+  }
+  
+  let mediaResponseTemplate = 
+    {
+      "google": {
+      "conversationToken": "{}",
+      "expectUserResponse": true,
+      "expectedInputs": [{
+        "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
+        "inputPrompt": {
+          "richInitialPrompt": {
+            "items": [{
+              "simpleResponse": {
+                "textToSpeech": "${songName} from ${author}"
+              }
+            }, {
+              "mediaResponse": {
+                "mediaType": "AUDIO",
+                "mediaObjects": [{
+                  "name": "${songName}",
+                  "description": "${description}",
+                  "large_image": {
+                    "url": "${imageUrl}"
+                  },
+                  "contentUrl": "${songUrl}"
+                }]
+              }
+            }],
+            "suggestions": [
+              {"title": "Play another"},
+              {"title": "Share a song"},
+              {"title": "Send me daily"}
+            ]
+          }
+        }
+      }]
+    }
+  }
+    ;
+
+  let finalMediaResponseTemplate = 
+    {
+      "google": {
+        "conversationToken": "{}",
+        "expectUserResponse": false,
+          "finalResponse": {
+            "richResponse": {
+              "items": [{
+                "simpleResponse": {
+                  "textToSpeech": "${songName} from ${author}"
+                }
+              }, {
+                "mediaResponse": {
+                  "mediaType": "AUDIO",
+                  "mediaObjects": [{
+                    "name": "${songName}",
+                    "description": "${description}",
+                    "large_image": {
+                      "url": "${imageUrl}"
+                    },
+                    "contentUrl": "${songUrl}"
+                  }]
+                }
+              }]
+            }
+          }
+      }
+    }
+    ;
+  
+  if (continueConversation) {
+     let responseToUser = {
+        speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
+        text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
+        data: mediaResponseTemplate
+      };
+      sendResponse(responseToUser);
+  } else {
+     let responseToUser = {
+        speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
+        text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
+        data: finalMediaResponseTemplate
+      };
+      sendResponse(responseToUser);
+  }
+}
   console.log('Nancy: Dialogflow Response: ' + JSON.stringify(response.body));
 }
 // Construct rich response for Google Assistant (v1 requests only)
@@ -444,3 +566,5 @@ const richResponsesV1 = {
     }
   }
 };
+}
+
