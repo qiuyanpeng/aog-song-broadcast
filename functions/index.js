@@ -196,7 +196,7 @@ function processV1Request (request, response) {
           'json': true,
           'body': { 'customPushMessage': notif, 'isInSandbox': true }
         }, function(err,httpResponse,body) {
-          console.log(httpResponse.statusCode + ': ' + httpResponse.statusMessage)
+          console.log('push message result: ' + httpResponse.statusCode + ': ' + httpResponse.statusMessage)
         });
       });
     },
