@@ -32,40 +32,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 * and also whether conversation should continue after the song.
 */
 function playMedia(app, song, continueConversation, comments = "") {
-  const mediaResponseTemplate = `
-  {
-    "conversationToken": "{}",
-    "expectUserResponse": true,
-    "expectedInputs": [{
-      "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
-      "inputPrompt": {
-        "richInitialPrompt": {
-          "items": [{
-            "simpleResponse": {
-              "textToSpeech": "${songName} from ${author}"
-            }
-          }, {
-            "mediaResponse": {
-              "mediaType": "AUDIO",
-              "mediaObjects": [{
-                "name": "${songName}",
-                "description": "${description}",
-                "large_image": {
-                  "url": "${imageUrl}"
-                },
-                "contentUrl": "${songUrl}"
-              }]
-            }
-          }],
-          "suggestions": [
-            {"title": "Play another"},
-            {"title": "Share this song"}
-          ]
-        }
-      }
-    }]
-  }
-  `;
   let songName = song.title;
   let author = song.author;
   let imageUrl = song.image;
@@ -76,7 +42,74 @@ function playMedia(app, song, continueConversation, comments = "") {
     let description = comments;
   }
   
-  app.doResponse_(JSON.parse(mediaResponseTemplate));
+  let mediaResponseTemplate = `
+    {
+      "conversationToken": "{}",
+      "expectUserResponse": true,
+      "expectedInputs": [{
+        "possibleIntents": [{"intent": "assistant.intent.action.TEXT"}],
+        "inputPrompt": {
+          "richInitialPrompt": {
+            "items": [{
+              "simpleResponse": {
+                "textToSpeech": "${songName} from ${author}"
+              }
+            }, {
+              "mediaResponse": {
+                "mediaType": "AUDIO",
+                "mediaObjects": [{
+                  "name": "${songName}",
+                  "description": "${description}",
+                  "large_image": {
+                    "url": "${imageUrl}"
+                  },
+                  "contentUrl": "${songUrl}"
+                }]
+              }
+            }],
+            "suggestions": [
+              {"title": "Play another"},
+              {"title": "Share this song"}
+            ]
+          }
+        }
+      }]
+    }
+    `;
+
+  let finalMediaResponseTemplate = `
+    {
+      "conversationToken": "{}",
+      "expectUserResponse": false,
+        "finalResponse": {
+          "richResponse": {
+            "items": [{
+              "simpleResponse": {
+                "textToSpeech": "${songName} from ${author}"
+              }
+            }, {
+              "mediaResponse": {
+                "mediaType": "AUDIO",
+                "mediaObjects": [{
+                  "name": "${songName}",
+                  "description": "${description}",
+                  "large_image": {
+                    "url": "${imageUrl}"
+                  },
+                  "contentUrl": "${songUrl}"
+                }]
+              }
+            }]
+          }
+        }
+    }
+    `;
+  
+  if (continueConversation) {
+    app.doResponse_(JSON.parse(mediaResponseTemplate));
+  } else {
+    app.doResponse_(JSON.parse(finalMediaResponseTemplate));
+  }
 }
 
 /*
@@ -113,16 +146,11 @@ function processV1Request (request, response) {
     },
     'input.send_song': () => {
       console.log('input.send_song is called');
-      let name = app.getArgument('given-name');
+      let givn_name = app.getArgument('given-name');
       let song = app.getArgument('song');
-      if (song) {
-        app.tell(`name is ${name} and song is ${song}`);
-        // TODO(qyp): find the song
-      } else {
-        app.tell(`name is ${name} and song is random`);
-        // TODO(qyp): get a song
-      }
-      // TODO(qyp): Send a push
+      console.log(given_name);
+      console.log(song);
+      app.tell('send song called');
     },
     // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
     'input.unknown': () => {
