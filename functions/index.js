@@ -9,7 +9,6 @@
 
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
-const admin = require("firebase-admin");
 
 const google = require('googleapis');
 
