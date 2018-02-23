@@ -11,7 +11,7 @@ const functions = require('firebase-functions'); // Cloud Functions for Firebase
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 
 const googleApis = require('googleapis');
-const request = require('request');
+const requestApis = require('request');
 
 // This is the intent that is triggered for a notification.
 const PLAY_SONG_INTENT = 'play_song';
@@ -192,7 +192,7 @@ function processV1Request (request, response) {
 
         console.log(JSON.stringify(tokens) + "\n" + JSON.stringify(notif));
 
-        request.post('https://actions.googleapis.com/v2/conversations:send', {
+        requestApis.post('https://actions.googleapis.com/v2/conversations:send', {
           'auth': {
             'bearer': tokens.access_token
           },
