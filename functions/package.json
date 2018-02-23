@@ -17,7 +17,7 @@
     "apiai": "^4.0.3",
     "firebase-admin": "^4.2.1",
     "firebase-functions": "^0.5.7",
-    "googleapis": "^26.0.1",
+    "googleapis": "23.0.0",
     "request": "^2.83.0"
   }
 }

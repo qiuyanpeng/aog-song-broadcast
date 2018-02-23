@@ -10,7 +10,7 @@
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 
-const google = require('googleapis');
+const googleApis = require('googleapis');
 
 // This is the intent that is triggered for a notification.
 const PLAY_SONG_INTENT = 'play_song';
@@ -156,7 +156,7 @@ function processV1Request (request, response) {
       app.tell('send song called');
       
       const key = require('./song-broadcaster-4cea4ed1bc09.json');
-      let jwtClient = new google.auth.JWT(
+      let jwtClient = new googleApis.auth.JWT(
         key.client_email, null, key.private_key,
         ['https://www.googleapis.com/auth/actions.fulfillment.conversation'],
         null
