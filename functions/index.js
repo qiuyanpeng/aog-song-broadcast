@@ -10,6 +10,8 @@
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 
+const google = require('googleapis');
+
 // This is the intent that is triggered for a notification.
 const PLAY_SONG_INTENT = 'play_song';
 const MEDIA_STATUS_INTENT = "actions.intent.MEDIA_STATUS";
@@ -152,6 +154,39 @@ function processV1Request (request, response) {
       console.log(given_name);
       console.log(song_name);
       app.tell('send song called');
+      
+      const key = require('song-broadcaster-4cea4ed1bc09.json');
+      let jwtClient = new google.auth.JWT(
+        key.client_email, null, key.private_key,
+        ['https://www.googleapis.com/auth/actions.fulfillment.conversation'],
+        null
+      );
+
+      jwtClient.authorize(function (err, tokens) {
+       // placeholder for notification send
+
+        let notif = {
+          userNotification: {
+            title: 'Placeholder for song title',
+          },
+          target: {
+            userId: '<USER_ID>',
+            intent: 'play_song'
+          }
+        }
+
+        console.log(JSON.stringify(tokens) + "\n" + JSON.stringify(notif));
+
+        request.post('https://actions.googleapis.com/v2/conversations:send', {
+          'auth': {
+            'bearer': tokens.access_token
+          },
+          'json': true,
+          'body': { 'customPushMessage': notif, 'isInSandbox': true }
+        }, function(err,httpResponse,body) {
+          console.log(httpResponse.statusCode + ': ' + httpResponse.statusMessage)
+        });
+      });
     },
     // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
     'input.unknown': () => {
