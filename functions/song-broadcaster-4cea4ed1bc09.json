@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "song-broadcaster",
+  "private_key_id": "4cea4ed1bc09caf53f9770c3d7a2916e990cb63e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCoKkZ9r6WLB9VR\nMmWAxawi/LcvFtGt32ggiNdptwm/B5EjvikcK/UbEs7Ry4wQXeAXmEo+2Tzl12k5\nK4Kaw2wp4odOL8gVos1YxZOLXH3a+FE465dRJy2llcYuIj8s7tvvcA+JZqBsgFrJ\nAGEyPJOr6hMw9Wj7uXsqqNdnd02Z+8dyIMr0ydy57UfeNk/qcDQfLS0XIWwtOE38\nSqeG4OGLKi8a3IZNQPjCQHUY128+lit2+B+AMGMJOxeuIpIWd364PIwURRkAF3Eh\nhqo4gqP5m5dxHrMfTS5k3TGiDxY4+mBa8Cqubqat4UNGP5X34ntDnDsakE8Extur\nxInrTbTHAgMBAAECggEAN47gAx5Ivwoze8P+rPCh0l1T2Abd92fb6wPKx25lletW\nFEz7IAeVzwADvGRXPgEFzEXQIbt71yO3699oIuF1ltD0iuxWWm+TEEUWXfCM1A8+\nJmQPdgxPlGlLNGq0HJA9sXmAaJCzZ6VwWP/7HLHOx/lppb8ulBvPiWSG5fQQe1Ke\nVC5oq+Q2rXKsj2HEreQXeK9+pW3i6cpHef49ol6282/xtxt+PkdaUjeUXn8ElbgM\nNiH27t6mlgpAUMU7hadBuLHajyLKe6u8ypczRhxTJCY2Mevse2UfzD7Va+z8DQwf\nD6CpJyx4lBz4UZ83tfItJ0Px08jyeUF+EL6yQ2olYQKBgQDccry8LFRCTMyD8moI\n2QHr1K4VEDjxm6BGey1eJP4vbc8BdAjFvZc/+T7S/tC7kx+QAk3xpdg7TtXB63Xj\nDOpxDcWZw/Hmet847vUbKRJlyiJU3gHZJKgNIdlqz4M0Aywmog7FWiVpdCGGdtLU\nPH4Tc5Riu+gg8JiI8yn6uNyQnQKBgQDDSQSoFOAT83kV/5YgMmKhzvpZR/pN7WyB\nF8V3iJ1lJIKzvXdrUTd0GKxtTCoitNHohLgGBZlnMBl+3r+lHmwAqSU7avuLEnWN\nxXZj6cAPQ78h2I/XSpl1PSqh2oK1fmYtqlE8X/7liVNiBfW0AMv9MibbWjnRQ0kl\nh4EIVpHDswKBgEPnR8GCuhWOCHUgR48gIRpecZzlWVT6xfzP1mKobG95mIjvEACw\n7JT1Fmfxu6P7pn46Z33mwttJ5kgMWkys3s4iGtrJY4rGEFo+KNvL4/HcuISBufoD\n84vQAGOJNfXggEoKIxihMuLvtZ/wm/JqC7+8G1nqXY8/7QxKMoUbSj11AoGBAKue\nsQvyBJckAob1rf6vqQSgvFzYJ75yaEfvFygclI49juvdF2Tl5EEQKgCHzgPgOxUI\nBh2ssAsCN3XK1kuLN8lA3Sqhs1yeJVcpcQkPdS01EXTyOD8xHTnuPlgti29rHOsG\n4guYJY+dpvzfVfYSOTNT7tgZK/SfGFp2AkzMn5+HAoGAbIe5utXgOpWkZvWWXaqk\nvX7aRY55zOHm2qT1kLyVVZj1niEEEXZKNmLE17OGHb46T6961ol1KPOrkGErS6th\n+/dXua5SfrSUG6cquZklnAy6DYRhRs+09g5QZRYcyhMl2DyNHm0m9NZzbR9lS+8m\nDJ2MzxqCl+R7wNUK4f0a9hk=\n-----END PRIVATE KEY-----\n",
+  "client_email": "send-song@song-broadcaster.iam.gserviceaccount.com",
+  "client_id": "116069778610140181067",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/send-song%40song-broadcaster.iam.gserviceaccount.com"
+}
