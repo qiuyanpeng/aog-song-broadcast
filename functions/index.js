@@ -92,16 +92,18 @@ function processV1Request (request, response) {
     },
     'input.send_song': () => {
       console.log('input.send_song is called');
-      let name = app.getArgument('given-name');
+      let givn_name = app.getArgument('given-name');
       let song = app.getArgument('song');
-      if (song) {
-        app.tell(`name is ${given-name} and song is ${song}`);
+      console.log(given_name);
+      console.log(song);
+//      if (song) {
+//        app.tell(`name is ${given_name} and song is ${song}`);
         // TODO(qyp): find the song
-      } else {
-        app.tell(`name is ${given-name} and song is random`);
+//      } else {
+//        app.tell(`name is ${given_name} and song is random`);
         // TODO(qyp): get a song
-      }
-      // TODO(qyp): Send a push
+//      }
+//       TODO(qyp): Send a push
     },
     // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
     'input.unknown': () => {
