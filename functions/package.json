@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "actions-on-google": "^1.5.x",
+    "apiai": "^4.0.3",
     "firebase-admin": "^4.2.1",
     "firebase-functions": "^0.5.7",
-    "apiai": "^4.0.3"
+    "googleapis": "^26.0.1",
+    "request": "^2.83.0"
   }
 }
