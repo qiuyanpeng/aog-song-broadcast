@@ -205,8 +205,9 @@ function processV1Request (request, response) {
       let song = {
         'title': 'song 1',
         'author': 'Aog',
-        'imageUrl': 'https://image.jpg',
+        'imageUrl': 'https://images-na.ssl-images-amazon.com/images/M/MV5BMjM4NDM5NDI1OV5BMl5BanBnXkFtZTgwMDQ4NjE0MzE@._V1_UX182_CR0,0,182,268_AL_.jpg',
         'description': 'the first song',
+        'url': 'http://a.tumblr.com/tumblr_lmjk3pJTcz1qjm9mso1.mp3'
       };
       playMedia(app, song, true);
     },
