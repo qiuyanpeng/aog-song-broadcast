@@ -119,20 +119,12 @@ function processV1Request (request, response) {
         let currentDeviceHasScreen = app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT)
         if (!currentDeviceHasScreen) {
             console.log('Nancy: Current Device does not have screen');
-            let context = 'Sure, I can send you updates.';
-            let notif = 'Sample Update';
+            let context = 'Sure, I can send you updates';
+            let notif = 'Register for daily updates';
             let screenAvailable = app.hasAvailableSurfaceCapabilities(app.SurfaceCapabilities.SCREEN_OUTPUT);
             if (screenAvailable) {
                 console.log('Nancy: User has a screen');
-                //app.askForNewSurface(context, notif, [app.SurfaceCapabilities.SCREEN_OUTPUT]);
-                let responseToUser = {
-                //data: richResponsesV1, // Optional, uncomment to enable
-                //outputContexts: [{'name': 'weather', 'lifespan': 2, 'parameters': {'city': 'Rome'}}], // Optional, uncomment to enable
-                    speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
-                    text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
-                    data: askForNewSurfaceV1
-                };
-                sendResponse(responseToUser);
+                app.askForNewSurface(context, notif, [app.SurfaceCapabilities.SCREEN_OUTPUT]);
             } else {
                 console.log('Nancy: User does not have a device with screen');
                 app.tell("Sorry, you need a screen to see updates");
@@ -279,21 +271,3 @@ const richResponsesV1 = {
     }
   }
 };
-
-const askForNewSurfaceV1 = {
-    'google': {
-      'expectUserResponse': true,
-      'isSsml': false,
-      'systemIntent': {
-        'intent': 'actions.intent.NEW_SURFACE',
-        'data': {
-            '@type': 'type.googleapis.com/google.actions.v2.NewSurfaceValueSpec',
-            'context': 'Sure, I have some sample images for you.',
-            'notification_title': 'Sample Images',
-            'capabilities': [
-                'actions.capability.SCREEN_OUTPUT'
-            ]
-        }
-      }
-    }
-  };
