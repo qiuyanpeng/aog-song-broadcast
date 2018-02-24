@@ -378,10 +378,7 @@ function processV1Request (request, response) {
       }
     }
   };
-  // If undefined or unknown action use the default handler
-  if (!actionHandlers[action]) {
-    action = 'default';
-  }
+
   // Run the proper handler function to handle the request from Dialogflow
   actionHandlers[action]();
     // Function to send correctly formatted Google Assistant responses to Dialogflow which are then sent to the user
