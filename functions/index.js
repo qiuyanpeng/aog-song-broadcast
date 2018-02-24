@@ -137,19 +137,11 @@ function playMedia(app, song, continueConversation, comments = "") {
     
   
   if (continueConversation) {
-     let responseToUser = {
-        speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
-        text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
-        data: mediaResponseTemplate
-      };
-      sendResponse(responseToUser);
+
+    response.json(mediaResponseTemplate);
   } else {
-    let responseToUser = {
-        speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
-        text: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)', // displayed response
-        data: finalMediaResponseTemplate
-    };
-    sendResponse(responseToUser);
+
+    response.json(finalMediaResponseTemplate);
   }
 }
 
