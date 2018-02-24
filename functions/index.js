@@ -240,9 +240,9 @@ function processV1Request (request, response) {
           userNotification: {
             title: song.title,
             argument: {
-              name: 'song-name',
-              textValue: song.name,
-              rawValue: song.name
+              name: song.title,
+              textValue: song.title,
+              rawValue: song.title
             }
           },
           target: {
