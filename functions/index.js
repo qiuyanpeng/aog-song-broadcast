@@ -144,7 +144,7 @@ function playMedia(app, song, continueConversation, comments = "") {
       ])
     );
 
-    
+    console.log("Charlie: playMedia");
   
 //   if (continueConversation) {
 
