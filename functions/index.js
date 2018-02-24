@@ -133,15 +133,33 @@ function playMedia(app, song, continueConversation, comments = "") {
       }
     }
     ;
+  
+  const richResponse = app.buildRichResponse();
+  richResponse.addSimpleResponse(songName + " from " + author)
+    .addMediaResponse(app.buildMediaResponse()
+      .addMediaObjects([
+        app.buildMediaObject(songName, songUrl)
+          .setDescription(description)
+          .setImage(imageUrl, app.Media.ImageType.LARGE)
+      ])
+    );
 
     
   
+//   if (continueConversation) {
+
+//     response.json(mediaResponseTemplate);
+//   } else {
+
+//     response.json(finalMediaResponseTemplate);
+//   }
+  
   if (continueConversation) {
 
-    response.json(mediaResponseTemplate);
+    app.ask(richResponse);
   } else {
 
-    response.json(finalMediaResponseTemplate);
+    app.tell(richResponse);
   }
 }
 
