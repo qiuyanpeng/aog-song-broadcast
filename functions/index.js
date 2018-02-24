@@ -166,7 +166,7 @@ function findSong(songName = "", genre = "") {
   };
   
   let shapeOfView = {
-    'title': 'Shape of View',
+    'title': 'Shape of You',
     'author': 'Ed Sheeran',
     'imageUrl': 'https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg',
     'description': 'Ed Sheeran - Shape of View',
@@ -238,12 +238,8 @@ function processV1Request (request, response) {
       jwtClient.authorize(function (err, tokens) {
         let notif = {
           userNotification: {
-            title: song.title,
-            argument: {
-              name: song.title,
-              textValue: song.title,
-              rawValue: song.title
-            }
+            title: song.title
+          
           },
           target: {
             userId: 'ABwppHEa774ELS-y4Rd5085F-kwGE20xVvhhXWSzK8UUHYt_C18IKtN7GqE0u_VFe4lRH1gtY4lNNJgA2W8s_g',
