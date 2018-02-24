@@ -298,7 +298,7 @@ function processV1Request (request, response) {
             console.log('Nancy: Current Device has screen');
             // Call Register Updates.
             console.log('Roger: AskToRegisterUpdate()');
-            app.askToRegisterDailyUpdate(PLAY_SONG_INTENT);
+            app.askToRegisterDailyUpdate('play_song');
         }
       // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
     //   let responseToUser = {
@@ -314,7 +314,7 @@ function processV1Request (request, response) {
     'input.new_surface_response': () => {
         console.log('Nancy: in input.new_surface_response. Bye');
         if (app.isNewSurface()) {
-            app.tell('Thanks for accepting');
+            app.askForUpdatePermission('play_song');
         } else {
             app.tell('Ok, I understand. You don\'t want to switch devices. Bye');
         }
@@ -344,6 +344,11 @@ function processV1Request (request, response) {
         } else {
           app.tell('Ok I won\'t give you song updates.');
         }
+    },
+    'finish_push_permission': () => {
+      if (app.isPermissionGranted()) {
+          app.tell('Kay you get updates');
+      }
     },
     // Default handler for unknown or undefined actions
     'default': () => {
