@@ -138,10 +138,10 @@ function playMedia(app, song, continueConversation, comments = "") {
   
   if (continueConversation) {
 
-    response.json(JSON.parse(mediaResponseTemplate));
+    response.json(mediaResponseTemplate);
   } else {
 
-    response.json(JSON.parse(finalMediaResponseTemplate));
+    response.json(finalMediaResponseTemplate);
   }
 }
 
