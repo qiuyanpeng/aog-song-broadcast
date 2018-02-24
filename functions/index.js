@@ -150,6 +150,7 @@ function playMedia(app, song, continueConversation, comments = "") {
         data: finalMediaResponseTemplate
     };
     sendResponse(responseToUser);
+  }
 }
 
 /*
@@ -566,5 +567,4 @@ const richResponsesV1 = {
     }
   }
 };
-}
 
