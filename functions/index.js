@@ -226,7 +226,7 @@ function processV1Request (request, response) {
 
       let song = findSong(song_name);
       console.log(song);
-      app.tell('Sure, we are sharing ' + song.name + ' to ' + given_name);
+      app.tell('Sure, we are sharing ' + song.title + ' to ' + given_name);
       
       const key = require('./song-broadcaster-4cea4ed1bc09.json');
       let jwtClient = new googleApis.auth.JWT(
@@ -238,7 +238,7 @@ function processV1Request (request, response) {
       jwtClient.authorize(function (err, tokens) {
         let notif = {
           userNotification: {
-            title: song.name,
+            title: song.title,
             argument: {
               name: 'song-name',
               textValue: song.name,
